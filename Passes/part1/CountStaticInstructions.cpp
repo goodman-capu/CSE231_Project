@@ -4,6 +4,7 @@
 #include <unordered_map>
 
 using namespace llvm;
+using namespace std;
 
 namespace {
     struct CountStaticInstructions : public FunctionPass {
@@ -11,7 +12,7 @@ namespace {
         CountStaticInstructions() : FunctionPass(ID) {}
         
         bool runOnFunction(Function &F) override {
-            std::unordered_map<const char *, int> Icounter;
+            unordered_map<const char *, int> Icounter;
             for (BasicBlock &BB : F) {
                 for (Instruction &I : BB) {
                     // errs() << I.getOpcodeName() << '\n';
