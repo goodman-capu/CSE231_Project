@@ -68,12 +68,12 @@ private:
             category = 1;
         }
         
-        unsigned myNode = InstrToIndex[I];
+        unsigned myNode = instrToIndex(I);
         
         // Join all incoming info
         ReachingInfo *outInfo = new ReachingInfo();
         for (unsigned node : IncomingEdges) {
-            ReachingInfo *incomingInfo = EdgeToInfo[{node, myNode}];
+            ReachingInfo *incomingInfo = edgeToInfo({node, myNode});
             ReachingInfo::join(outInfo, incomingInfo, outInfo);
         }
         
@@ -81,7 +81,7 @@ private:
         if (category == 1) {
             outInfo->add(myNode);
         } else if (category == 3) {
-            unsigned firstNonPhiNode = InstrToIndex[I->getParent()->getFirstNonPHI()];
+            unsigned firstNonPhiNode = instrToIndex(I->getParent()->getFirstNonPHI());
             for (unsigned i = myNode; i < firstNonPhiNode; i++) {
                 outInfo->add(i);
             }

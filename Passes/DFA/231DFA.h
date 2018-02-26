@@ -70,7 +70,16 @@ namespace llvm {
     template <class Info, bool Direction>
     class DataFlowAnalysis {
         
+    public:
+        typedef std::pair<unsigned, unsigned> Edge;
+        
     private:
+        // Index to instruction map
+        std::map<unsigned, Instruction *> IndexToInstr;
+        // Instruction to index map
+        std::map<Instruction *, unsigned> InstrToIndex;
+        // Edge to information map
+        std::map<Edge, Info *> EdgeToInfo;
         // The bottom of the lattice
         Info Bottom;
         // The initial state of the analysis
@@ -229,18 +238,25 @@ namespace llvm {
                                   std::vector<Info *> & Infos) = 0;
         
     public:
-        typedef std::pair<unsigned, unsigned> Edge;
-        // Index to instruction map
-        std::map<unsigned, Instruction *> IndexToInstr;
-        // Instruction to index map
-        std::map<Instruction *, unsigned> InstrToIndex;
-        // Edge to information map
-        std::map<Edge, Info *> EdgeToInfo;
-
         DataFlowAnalysis(Info & bottom, Info & initialState) :
         Bottom(bottom), InitialState(initialState),EntryInstr(nullptr) {}
         
         virtual ~DataFlowAnalysis() {}
+        
+        Instruction * indexToInstr(unsigned index) {
+            assert(IndexToInstr.count(index) > 0 && "Cannot find index.");
+            return IndexToInstr[index];
+        }
+        
+        unsigned instrToIndex(Instruction * instr) {
+            assert(InstrToIndex.count(instr) > 0 && "Cannot find instruction.");
+            return InstrToIndex[instr];
+        }
+        
+        Info * edgeToInfo(Edge edge) {
+            assert(EdgeToInfo.count(edge) > 0 && "Cannot find edge.");
+            return EdgeToInfo[edge];
+        }
         
         /*
          * Print out the analysis results.
