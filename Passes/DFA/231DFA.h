@@ -60,7 +60,7 @@ namespace llvm {
          * Direction:
          *   In your subclass you need to implement this function.
          */
-        static Info* join(Info * info1, Info * info2, Info * result);
+        static void join(Info * info1, Info * info2, Info * result);
     };
     
     /*
@@ -134,7 +134,7 @@ namespace llvm {
         
         /*
          * Utility function:
-         *   Get incoming edges of the instruction identified by index.
+         *   Get outgoing edges of the instruction identified by index.
          *   OutgoingEdges stores the indices of the destination instructions of the outgoing edges.
          */
         void getOutgoingEdges(unsigned index, std::vector<unsigned> * OutgoingEdges) {
@@ -224,7 +224,7 @@ namespace llvm {
          * The flow function.
          *   Instruction I: the IR instruction to be processed.
          *   std::vector<unsigned> & IncomingEdges: the vector of the indices of the source instructions of the incoming edges.
-         *   std::vector<unsigned> & IncomingEdges: the vector of indices of the source instructions of the outgoing edges.
+         *   std::vector<unsigned> & OutgoingEdges: the vector of indices of the source instructions of the outgoing edges.
          *   std::vector<Info *> & Infos: the vector of the newly computed information for each outgoing eages.
          *
          * Direction:
@@ -245,7 +245,7 @@ namespace llvm {
          * Print out the analysis results.
          *
          * Direction:
-         *      Do not change this funciton.
+         *      Do not change this function.
          *      The autograder will check the output of this function.
          */
         void print() {
