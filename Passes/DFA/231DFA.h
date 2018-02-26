@@ -278,7 +278,39 @@ namespace llvm {
             
             // (2) Initialize the work list
             
+            for (auto iter = IndexToInstr.begin(); iter != IndexToInstr.end(); ++iter) {
+                unsigned node = iter->first;
+                if (node != 0) {
+                    worklist.push_back(node);
+                }
+            }
+            
             // (3) Compute until the work list is empty
+            
+            while (!worklist.empty()) {
+                unsigned node = worklist.front();
+                worklist.pop_front();
+                
+                std::vector<unsigned> IncomingEdges, OutgoingEdges;
+                std::vector<Info *> outInfos;
+                getIncomingEdges(node, &IncomingEdges);
+                getOutgoingEdges(node, &OutgoingEdges);
+                flowfunction(IndexToInstr[node], IncomingEdges, OutgoingEdges, outInfos);
+                
+                for (unsigned i = 0; i < OutgoingEdges.size(); i++) {
+                    unsigned outNode = OutgoingEdges[i];
+                    Edge e = {node, outNode};
+                    Info *oldInfo = EdgeToInfo[e];
+                    Info *outInfo = outInfos[i];
+                    Info *newInfo = new Info();
+                    Info::join(oldInfo, outInfo, newInfo);
+                    
+                    if (!Info::equals(outInfo, newInfo)) {
+                        EdgeToInfo[e] = newInfo;
+                        worklist.push_back(outNode);
+                    }
+                }
+            }
         }
     };
     
