@@ -71,13 +71,6 @@ namespace llvm {
     class DataFlowAnalysis {
         
     private:
-        typedef std::pair<unsigned, unsigned> Edge;
-        // Index to instruction map
-        std::map<unsigned, Instruction *> IndexToInstr;
-        // Instruction to index map
-        std::map<Instruction *, unsigned> InstrToIndex;
-        // Edge to information map
-        std::map<Edge, Info *> EdgeToInfo;
         // The bottom of the lattice
         Info Bottom;
         // The initial state of the analysis
@@ -236,6 +229,14 @@ namespace llvm {
                                   std::vector<Info *> & Infos) = 0;
         
     public:
+        typedef std::pair<unsigned, unsigned> Edge;
+        // Index to instruction map
+        std::map<unsigned, Instruction *> IndexToInstr;
+        // Instruction to index map
+        std::map<Instruction *, unsigned> InstrToIndex;
+        // Edge to information map
+        std::map<Edge, Info *> EdgeToInfo;
+
         DataFlowAnalysis(Info & bottom, Info & initialState) :
         Bottom(bottom), InitialState(initialState),EntryInstr(nullptr) {}
         
@@ -305,7 +306,7 @@ namespace llvm {
                     Info *newInfo = new Info();
                     Info::join(oldInfo, outInfo, newInfo);
                     
-                    if (!Info::equals(outInfo, newInfo)) {
+                    if (!Info::equals(oldInfo, newInfo)) {
                         EdgeToInfo[e] = newInfo;
                         worklist.push_back(outNode);
                     }
