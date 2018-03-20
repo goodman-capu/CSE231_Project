@@ -140,10 +140,12 @@ private:
             Instruction *falseInstr = (Instruction *)(((SelectInst *)I)->getFalseValue());
             unsigned trueInstrIdx = instrToIndex(trueInstr);
             unsigned falseInstrIdx = instrToIndex(falseInstr);
-            if (trueInstrIdx != UINT_MAX && falseInstrIdx != UINT_MAX) {
+            if (trueInstrIdx != UINT_MAX) {
                 MayPointToInfo::tInfo trueInfo = outInfo->get(_R, trueInstrIdx);
-                MayPointToInfo::tInfo falseInfo = outInfo->get(_R, falseInstrIdx);
                 outInfo->add(_R, myIdx, trueInfo);
+            }
+            if (falseInstrIdx != UINT_MAX) {
+                MayPointToInfo::tInfo falseInfo = outInfo->get(_R, falseInstrIdx);
                 outInfo->add(_R, myIdx, falseInfo);
             }
             
