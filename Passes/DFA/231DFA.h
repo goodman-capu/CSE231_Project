@@ -219,7 +219,22 @@ namespace llvm {
          *   Implement the following function in part 3 for backward analyses
          */
         void initializeBackwardMap(Function * func) {
+            initializeForwardMap(func);
+            auto oldEdgeToInfo = EdgeToInfo;
+            EdgeToInfo = std::map<Edge, Info *>();
             
+            // Reverse every edge
+            for (auto keyVal : oldEdgeToInfo) {
+                Edge e = keyVal.first;
+                Instruction *from = indexToInstr(e.first), *to = indexToInstr(e.second);
+                if (from != nullptr) { // Not EntryInstr
+                    Info *i = keyVal.second;
+                    addEdge(to, from, i);
+                }
+            }
+            
+            EntryInstr = (Instruction *) &((func->back()).back());
+            addEdge(nullptr, EntryInstr, &InitialState);
         }
         
         /*
@@ -244,18 +259,15 @@ namespace llvm {
         virtual ~DataFlowAnalysis() {}
         
         Instruction * indexToInstr(unsigned index) {
-            assert(IndexToInstr.count(index) > 0 && "Cannot find index.");
-            return IndexToInstr[index];
+            return IndexToInstr.count(index) > 0 ? IndexToInstr[index] : nullptr;
         }
         
         unsigned instrToIndex(Instruction * instr) {
-            assert(InstrToIndex.count(instr) > 0 && "Cannot find instruction.");
-            return InstrToIndex[instr];
+            return InstrToIndex.count(instr) > 0 ? InstrToIndex[instr] : UINT_MAX;
         }
         
         Info * edgeToInfo(Edge edge) {
-            assert(EdgeToInfo.count(edge) > 0 && "Cannot find edge.");
-            return EdgeToInfo[edge];
+            return EdgeToInfo.count(edge) > 0 ? EdgeToInfo[edge] : nullptr;
         }
         
         /*
