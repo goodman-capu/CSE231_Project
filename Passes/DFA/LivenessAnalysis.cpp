@@ -38,14 +38,11 @@ public:
     }
     
     static void join(LivenessInfo * info1, LivenessInfo * info2, LivenessInfo * result) {
-        if (result != info1) {
-            for (auto d : info1->data) {
-                result->add(d);
-            }
-        }
-        if (result != info2) {
-            for (auto d : info2->data) {
-                result->add(d);
+        for (auto info : {info1, info2}) {
+            if (result != info) {
+                for (auto d : info->data) {
+                    result->add(d);
+                }
             }
         }
     }

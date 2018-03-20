@@ -41,25 +41,18 @@ public:
     }
     
     void print() {
-        for (auto R : RMap) {
-            if (R.second.size() == 0) {
-                continue;
+        for (auto ptr : {&RMap, &MMap}) {
+            string label = (ptr == &RMap) ? "R" : "M";
+            for (auto M : *ptr) {
+                if (M.second.size() == 0) {
+                    continue;
+                }
+                errs() << label << M.first << "->(";
+                for (auto d : M.second) {
+                    errs() << "M" << d << "/";
+                }
+                errs() << ")|";
             }
-            errs() << "R" << R.first << "->(";
-            for (auto d : R.second) {
-                errs() << "M" << d << "/";
-            }
-            errs() << ")|";
-        }
-        for (auto M : MMap) {
-            if (M.second.size() == 0) {
-                continue;
-            }
-            errs() << "M" << M.first << "->(";
-            for (auto d : M.second) {
-                errs() << "M" << d << "/";
-            }
-            errs() << ")|";
         }
         errs() << "\n";
     }
@@ -69,20 +62,14 @@ public:
     }
     
     static void join(MayPointToInfo * info1, MayPointToInfo * info2, MayPointToInfo * result) {
-        if (result != info1) {
-            for (auto d : info1->RMap) {
-                result->add(_R, d.first, d.second);
-            }
-            for (auto d : info1->MMap) {
-                result->add(_M, d.first, d.second);
-            }
-        }
-        if (result != info2) {
-            for (auto d : info2->RMap) {
-                result->add(_R, d.first, d.second);
-            }
-            for (auto d : info2->MMap) {
-                result->add(_M, d.first, d.second);
+        for (auto info : {info1, info2}) {
+            if (result != info) {
+                for (auto d : info->RMap) {
+                    result->add(_R, d.first, d.second);
+                }
+                for (auto d : info->MMap) {
+                    result->add(_M, d.first, d.second);
+                }
             }
         }
     }
