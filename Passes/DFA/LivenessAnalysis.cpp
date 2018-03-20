@@ -103,7 +103,7 @@ private:
             
             // Copy output to every edge
             for (unsigned i = 0; i < OutgoingEdges.size(); i++) {
-                Infos.push_back(new LivenessInfo(*outInfo));
+                Infos.push_back(outInfo);
             }
         } else { // PHI node
             unsigned firstNonPhiIdx = instrToIndex(I->getParent()->getFirstNonPHI());
